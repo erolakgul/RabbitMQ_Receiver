@@ -1,5 +1,6 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ_Receiver.Models;
 using System;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace RabbitMQ_Receiver
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "hello",
+                channel.QueueDeclare(queue: "modal",
                                 durable: false,
                                 exclusive: false,
                                 autoDelete: false,
@@ -22,11 +23,12 @@ namespace RabbitMQ_Receiver
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
+                    var message = Helper.ByteArrayToObject(ea.Body.ToArray());
+                    //var body = ea.Body.ToArray(); //string metinler için
+                    //var message = Encoding.UTF8.GetString(body);
                     Console.WriteLine(" [x] Received {0}", message);
                 };
-                channel.BasicConsume(queue: "hello",
+                channel.BasicConsume(queue: "modal",
                                      autoAck: true,
                                      consumer: consumer);
 

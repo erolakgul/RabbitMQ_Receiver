@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ_Receiver.Models;
 using System;
@@ -23,10 +24,10 @@ namespace RabbitMQ_Receiver
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    var message = Helper.ByteArrayToObject(ea.Body.ToArray());
+                    Category data = Helper<Category>.ByteArrayToGeneric(ea.Body.ToArray());
                     //var body = ea.Body.ToArray(); //string metinler için
                     //var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(" [x] Received {0}", message);
+                    Console.WriteLine(" [x] Received => {0} {1}", data.Name, data.Description);
                 };
                 channel.BasicConsume(queue: "modal",
                                      autoAck: true,

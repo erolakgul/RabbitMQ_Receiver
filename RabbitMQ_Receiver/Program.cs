@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ_Receiver.Models;
 using System;
-using System.Text;
 
 namespace RabbitMQ_Receiver
 {
@@ -24,11 +22,18 @@ namespace RabbitMQ_Receiver
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    Category data = Helper<Category>.ByteArrayToGeneric(ea.Body.ToArray());
-                    //var body = ea.Body.ToArray(); //string metinler için
-                    //var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine(" [x] Received => {0} {1}", data.Name, data.Description);
+                    var body = ea.Body.ToArray();
+                    //Category data = Helper<Category>.ByteArrayToGeneric(body);
+
+                    #region string msg
+                    //string metinler için
+                    var message = Helper<string>.ByteArrayToGeneric(body);// Encoding.UTF8.GetString(body); 
+                    #endregion
+
+                    Console.WriteLine("Received Message :" + message);
+                    //Console.WriteLine(" [x] Received => {0} {1}", data.Name, data.Description);
                 };
+
                 channel.BasicConsume(queue: "modal",
                                      autoAck: true,
                                      consumer: consumer);
